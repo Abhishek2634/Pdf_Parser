@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>LinkedIn PDF to HTML Resume</title>
+</head>
+
+<body>
+    <h1>Upload LinkedIn PDF Resume</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="pdfFile"><h2>Select LinkedIn Resume PDF:</h2></label>
+        <br>
+        <input class='inp' type="file" id="pdfFile" name="resume" accept="application/pdf" required>
+        <button class='btn' type="submit">Upload</button>
+    </form>
+
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            formData.append('resume', document.getElementById('pdfFile').files[0]);
+
+            document.getElementById('output').innerHTML = '<p>Processing...</p>';
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const htmlResume = await response.text();
+                    document.getElementById('output').innerHTML = htmlResume;
+                } else {
+                    document.getElementById('output').innerText = 'Error generating HTML resume.';
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('output').innerText = 'Failed to process the file.';
+            }
+        });
+    </script>
+</body>
+
+</html>
